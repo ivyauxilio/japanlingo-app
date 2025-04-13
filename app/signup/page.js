@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 function Page() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [displayName, setDisplayName] = useState('');
     const [isValid, setIsValid] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
@@ -25,21 +26,22 @@ function Page() {
     const handleForm = async (e) => {
         e.preventDefault()
 
-        try {
-            if (!isValid) {
-              throw new Error("Password does not meet the required criteria.");
-            }
-            const { result, error } = await signUp(email, password);
+        // try {
+        //     if (!isValid) {
+        //       throw new Error("Password does not meet the required criteria.");
+        //     }
+            const { result, error } = await signUp(displayName,email, password);
        
-            console.log(result)
+            console.log("Result",result)
             return router.push("/admin")
 
             if (error) {
                 return console.log(error)
             }
-          } catch (err) {
-            setError(err.message);
-          }
+          // } catch (err) {
+          //   console.log("ERROR", displayName + err)
+          //   setError(err.message);
+          // }
 
 
         // const newPassword = e.target.value;
@@ -77,6 +79,30 @@ function Page() {
 
     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
       <form onSubmit={handleForm} className="space-y-6">
+        <div>
+          <label htmlFor="displayName" className="block text-sm/6 font-medium text-gray-900">Fullname</label>
+          <div className="mt-2">
+            {/* <input
+              id="name"
+              name="name"
+              type="text"
+              required
+              autoComplete="name"
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+            /> */}
+              <input
+              id="displayName"
+              type="text"
+              placeholder="Display Name"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+              required
+            />
+
+          </div>
+        </div>
         <div>
           <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
             Email address

@@ -2,52 +2,63 @@
 
 import { useState,useEffect } from "react";
 import { FaParagraph, FaNewspaper } from "react-icons/fa";
-import { addCardToFirestore, Card } from "../firebase/firestore";
+// import { addCardToFirestore, Card } from "../firebase/firestore";
+import { useDispatch,useSelector  } from "react-redux";
+import { addCard } from "../redux/cardsSlice";
+import { AppDispatch,RootState } from "../lib/store";
+import { closeModal } from "../redux/modal";
+import { toast } from "sonner";
 
-const AddCardForm = ({ userId }: { userId: string }) => {
+
+const AddCardForm = ({ userId, }: { userId: string}) => {
   // const [question, setQuestion] = useState("");
   // const [answer, setAnswer] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
+ 
 
   // const [wrongAnswers, setWrongAnswers] = useState<string[]>(["", "", ""]);
 
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // if (!question || !answer || wrongAnswers.some((wa) => !wa)) return;
-    if (!front || !back ) return;
-
-    const newFlashCard: Card = {
-      front,
-      back,
-      interval:1,
-      repetitions:0,
-      longMemory:false,
-      nextReview: new Date(),
+    // if (!front || !back ) return alert("All fields are required!");
+    if (!front || !back) {
+      toast.error("Please fill in both sides of the card.");
+      return;
     }
 
-    // const newCard: Card = {
-    //   question,
-    //   answer,
-    //   wrongAnswers,
-    //   interval: 1, // Start review in 1 day
-    //   repetitions: 0,
-    //   longMemory: false,
-    //   nextReview: new Date(), // Today's date
-    // };
+    const today = new Date();
+    const formattedDate = today.toISOString().split("T")[0];
 
-    await addCardToFirestore(userId, newFlashCard);
+    const newFlashCard = {
+      front,
+      back,
+      interval: 1,
+      repetitions: 1,
+      nextReview: new Date().toISOString(),
+      longMemory: false,
+      created_at: new Date().toISOString(),
+    }
 
-    // Clear input fields
-    // setQuestion("");
-    // setAnswer("");
-    // setWrongAnswers(["", "", ""]);
+    try {
+      dispatch(addCard(newFlashCard)).unwrap(); // ✅ Ensures proper error handling
+      dispatch(closeModal());
+      toast.success("Flashcard added successfully!");
+      setFront("");
+      setBack("");
+    } catch (error) {
+      toast.error("Failed to add flashcard.");
+      console.error("Error adding card:", error);
+    }
+
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border rounded-lg">
+    <form onSubmit={handleSubmit} className="p-4 border rounded-lg w-100">
     <div className="memo_views_molecules_card-fields_fields-container">
       <div className="memo_views_molecules_card-fields_field-label--container">
           <p className="flex items-center gap-2"><FaNewspaper/> <span> Front</span></p>

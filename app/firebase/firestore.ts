@@ -1,6 +1,7 @@
 import { db } from "./config";
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 
+
 export type Card = {
   // question: string;
   // answer: string;
@@ -18,7 +19,7 @@ export const addCardToFirestore = async (userId: string, card: Card) => {
     await addDoc(collection(db, "cards"), {
       userId,
       ...card,
-      nextReview: Timestamp.fromDate(card.nextReview),
+      // nextReview: Timestamp.fromDate(card.nextReview),
     });
     console.log("Card added successfully!");
   } catch (error) {
