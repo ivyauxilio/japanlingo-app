@@ -14,18 +14,29 @@ import { toast } from "sonner";
 const FlashcardReview = () => {
   // const { user, loading } = useAuth();
   const router = useRouter()
-
   const dispatch = useDispatch<AppDispatch>();
+
   const [frontFlashCard, setFrontFlashCard] = useState("");
   const [backFlashCard, setBackFlashCard] = useState("");
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+
   const isOpenModal = useSelector((state: RootState) => state.modal.isOpen);
   const { dueFlashcards, loading, error } = useSelector((state: RootState) => state.cards);
   const {user} = useSelector((state: RootState) => state.auth);
+
+    useEffect(() => {
+    if (!user || !user.email) {
+        router.push("/");
+      } else {
+        dispatch(fetchDueFlashcards(user.uid));
+      }
+   
+  }, [user, dispatch]);
+
   if (!user || !user.uid) {
     return ("User not authenticated");
   }
-
+  
   const handleReview = (data: Card, isCorrect: boolean) => {
     dispatch(reviewFlashcard({ card: data, isCorrect }));
     dispatch(closeModal())
@@ -43,15 +54,6 @@ const FlashcardReview = () => {
       dispatch(deleteFlashcard(id as string));
     }
   };
-
-  useEffect(() => {
-    if (!user || !user.email) {
-        router.push("/");
-      } else {
-        dispatch(fetchDueFlashcards(user.uid));
-      }
-   
-  }, [user, dispatch]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
