@@ -1,5 +1,7 @@
 
 import { ReactNode } from "react";
+import { useSelector  } from "react-redux";
+import { RootState } from "../lib/store";
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,7 +11,8 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, modal_title }) => {
-  if (!isOpen) return null;
+  const isOpenModal = useSelector((state: RootState) => state.modal.isOpen);
+  if (!isOpenModal) return null;
 
   return (
     <div 
@@ -17,9 +20,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, modal_title })
       onClick={onClose}
     >
       <div 
-        className="bg-white p-6 rounded-xl  shadow-2xl w-[800px] max-w-3xl transform transition-all scale-95 opacity-0 animate-fadeIn"
+        className="bg-white p-6 rounded-xl w-auto max-w-[90vw] shadow-2xl transform transition-all scale-95 opacity-0 animate-fadeIn "
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
-      >
+      > 
        <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">{modal_title}</h2>
           <button
